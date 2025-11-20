@@ -2,36 +2,31 @@
 using Microsoft.EntityFrameworkCore;
 using CourseEvaluationSystem.Data;
 using CourseEvaluationSystem.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CourseEvaluationSystem.Controllers
 {
     public class EvaluationController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public EvaluationController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // Visa formulär för evaluation
         public async Task<IActionResult> Create(int courseId)
         {
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null) return NotFound();
-
-            ViewBag.CourseTitle = course.Title;
             ViewBag.CourseId = course.ID;
+            ViewBag.CourseTitle = course.Title;
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Rating,Comment,CourseID")] Evaluation evaluation)
+        public async Task<IActionResult> Create(Evaluation evaluation)
         {
-            if (!ModelState.IsValid) return View(evaluation);
-
-            // Teststudent
             var student = await _context.Students.FirstOrDefaultAsync(s => s.ID == 1);
             if (student == null)
             {
@@ -41,25 +36,20 @@ namespace CourseEvaluationSystem.Controllers
             }
 
             evaluation.StudentID = student.ID;
-            evaluation.Date = DateTime.Now;
+            evaluation.Date = System.DateTime.Now;
 
             _context.Evaluations.Add(evaluation);
             await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(MyEvaluations));
+            return RedirectToAction("Index", "Course");
         }
 
         public async Task<IActionResult> MyEvaluations()
         {
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.ID == 1);
+            var student = await _context.Students.Include(s => s.Evaluations)
+                                                 .ThenInclude(e => e.Course)
+                                                 .FirstOrDefaultAsync(s => s.ID == 1);
             if (student == null) return View(new List<Evaluation>());
-
-            var evaluations = await _context.Evaluations
-                .Include(e => e.Course)
-                .Where(e => e.StudentID == student.ID)
-                .ToListAsync();
-
-            return View(evaluations);
+            return View(student.Evaluations);
         }
     }
 }

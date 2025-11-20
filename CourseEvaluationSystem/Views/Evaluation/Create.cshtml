@@ -1,21 +1,13 @@
-﻿@model CourseEvaluationSystem.Models.Evaluation
-
-<h2>Evaluate @ViewBag.CourseTitle</h2>
-
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-
-    <input type="hidden" asp-for="CourseID" value="@ViewBag.CourseId" />
-
-    <div class="mb-3">
-        <label asp-for="Rating" class="form-label">Rating (1-5)</label>
-        <input asp-for="Rating" class="form-control" type="number" min="1" max="5" required />
+﻿<h2>Evaluate @ViewBag.CourseTitle</h2>
+<form method="post">
+    <input type="hidden" name="CourseID" value="@ViewBag.CourseId" />
+    <div class="mb-2">
+        <label>Rating (1-5):</label>
+        <input type="number" name="Rating" min="1" max="5" class="form-control" />
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Comment" class="form-label">Comment</label>
-        <textarea asp-for="Comment" class="form-control"></textarea>
+    <div class="mb-2">
+        <label>Comment:</label>
+        <textarea name="Comment" class="form-control"></textarea>
     </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <input type="submit" value="Submit" class="btn btn-success" />
 </form>

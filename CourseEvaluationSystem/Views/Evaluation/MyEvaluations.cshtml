@@ -1,32 +1,23 @@
 ﻿@model IEnumerable<CourseEvaluationSystem.Models.Evaluation>
 
 <h2>My Evaluations</h2>
-
 @if (!Model.Any())
 {
-    <p>You haven't submitted any evaluations yet.</p>
+    <p>No evaluations yet.</p>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-bordered">
+        <tr><th>Course</th><th>Rating</th><th>Comment</th><th>Date</th></tr>
+        @foreach (var e in Model)
+        {
             <tr>
-                <th>Course</th>
-                <th>Rating</th>
-                <th>Comment</th>
-                <th>Date</th>
+                <td>@e.Course.Title</td>
+                <td>@e.Rating</td>
+                <td>@e.Comment</td>
+                <td>@e.Date.ToShortDateString()</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var e in Model)
-            {
-                <tr>
-                    <td>@e.Course.Title</td>
-                    <td>@e.Rating</td>
-                    <td>@e.Comment</td>
-                    <td>@e.Date.ToShortDateString()</td>
-                </tr>
-            }
-        </tbody>
+        }
     </table>
+    <p><strong>Average Rating:</strong> @(Model.ToList().Average(e => e.Rating).ToString("0.0"))</p>
 }

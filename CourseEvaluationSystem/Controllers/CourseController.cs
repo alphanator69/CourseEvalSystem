@@ -2,37 +2,36 @@
 using Microsoft.EntityFrameworkCore;
 using CourseEvaluationSystem.Data;
 using CourseEvaluationSystem.Models;
+using System.Threading.Tasks;
 
 namespace CourseEvaluationSystem.Controllers
 {
     public class CourseController : Controller
     {
         private readonly ApplicationDbContext _context;
+
         public CourseController(ApplicationDbContext context)
         {
             _context = context;
         }
-        
-        // Lista alla kurser
+
         public async Task<IActionResult> Index()
         {
-            var courses = await _context.Courses.ToListAsync();
+            var courses = await _context.Courses.Include(c => c.Evaluations).ToListAsync();
             return View(courses);
         }
 
-        // Visa formulär för ny kurs
         public IActionResult Create() => View();
 
-        // Skapa ny kurs
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title")] Course course)
+        public async Task<IActionResult> Create(Course course)
         {
-            if (!ModelState.IsValid) return View(course);
+            if (string.IsNullOrWhiteSpace(course.Title))
+                return View(course);
 
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
     }
 }
