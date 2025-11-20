@@ -1,0 +1,32 @@
+﻿@model IEnumerable<CourseEvaluationSystem.Models.Evaluation>
+
+<h2>My Evaluations</h2>
+
+@if (!Model.Any())
+{
+    <p>You haven't submitted any evaluations yet.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model)
+            {
+                <tr>
+                    <td>@e.Course.Title</td>
+                    <td>@e.Rating</td>
+                    <td>@e.Comment</td>
+                    <td>@e.Date.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
