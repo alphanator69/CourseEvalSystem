@@ -1,13 +1,12 @@
 using Xunit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using CourseEvaluationSystem.Data;
 using CourseEvaluationSystem.Models;
 using CourseEvaluationSystem.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
 using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 
 namespace CourseEvaluationSystem.Tests
 {
@@ -16,38 +15,38 @@ namespace CourseEvaluationSystem.Tests
         private ApplicationDbContext GetInMemoryDb()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             return new ApplicationDbContext(options);
         }
 
         [Fact]
-        public async Task Index_ReturnsCourses()
+        public async Task Index_ReturnsAllCourses()
         {
             var context = GetInMemoryDb();
-            context.Courses.Add(new Course { Title = "Math 101" });
-            context.Courses.Add(new Course { Title = "History 101" });
+            context.Courses.Add(new Course { Title = "Math" });
+            context.Courses.Add(new Course { Title = "History" });
             await context.SaveChangesAsync();
 
             var controller = new CourseController(context);
 
             var result = await controller.Index() as ViewResult;
-            var model = result?.Model as List<Course>;  
+            var model = result?.Model as List<Course>;
 
-            Assert.NotNull(result);
             Assert.NotNull(model);
             Assert.Equal(2, model.Count);
         }
 
         [Fact]
-        public async Task Create_PostAddsCourse()
+        public async Task Create_AddsCourse()
         {
             var context = GetInMemoryDb();
             var controller = new CourseController(context);
-            var newCourse = new Course { Title = "Physics 101" };
 
-            var result = await controller.Create(newCourse) as RedirectToActionResult;
+            var course = new Course { Title = "Physics" };
+
+            var result = await controller.Create(course) as RedirectToActionResult;
 
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
