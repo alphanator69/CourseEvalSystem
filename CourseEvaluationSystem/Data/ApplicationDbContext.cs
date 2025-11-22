@@ -1,14 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using CourseEvaluationSystem.Models;
 
 namespace CourseEvaluationSystem.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Evaluation> Evaluations { get; set; }
-        public DbSet<Student> Students { get; set; }
+        public DbSet<CourseEvaluationSystem.Models.Course> Courses { get; set; } = null!;
+        public DbSet<CourseEvaluationSystem.Models.Evaluation> Evaluations { get; set; } = null!;
+        public DbSet<CourseEvaluationSystem.Models.Student> Students { get; set; } = null!;
     }
 }
